@@ -1,4 +1,5 @@
 # 1-Parameter AI
+zackakil.github.io/1-parameter-AI/
 
 An interactive demo contrasting **classic programming** (manually setting a threshold) with **machine learning** (learning a single-parameter decision boundary from labeled examples) using a 3D desk lamp and ambient sunlight simulation.
 
