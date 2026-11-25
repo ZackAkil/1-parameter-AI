@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>1-Parameter AI</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="container">
+    <header class="header">
+      <h1>1-Parameter AI</h1>
+      <p id="mode-subtitle" class="subtitle">
+        Set the ambient light threshold manually to program when the lamp turns on.
+      </p>
+    </header>
+
+    <div class="workspace">
+      <div class="controls-column">
+        <div class="mode-tabs" role="tablist" aria-label="Demo mode">
+          <button
+            id="tab-programmer"
+            type="button"
+            role="tab"
+            aria-selected="true"
+            class="tab-btn is-active"
+            data-mode="programmer"
+          >
+            Programmer Mode
+          </button>
+          <button
+            id="tab-ml"
+            type="button"
+            role="tab"
+            aria-selected="false"
+            class="tab-btn"
+            data-mode="ml"
+          >
+            Machine Learning Mode
+          </button>
+        </div>
+
+        <details id="ml-data-panel" class="panel collapsible hidden">
+          <summary class="panel-header">
+            <h2>Captured Training Data</h2>
+            <div class="summary-meta">
+              <span id="data-count" class="mono muted">0 examples</span>
+              <span class="chevron" aria-hidden="true"></span>
+            </div>
+          </summary>
+
+          <div class="collapsible-body">
+            <div class="data-toolbar">
+              <label class="record-toggle">
+                <input id="record-toggle" type="checkbox" />
+                <span>Record training data</span>
+              </label>
+              <button id="clear-data-btn" type="button" class="ghost-btn">
+                Clear Data
+              </button>
+            </div>
+
+            <div id="data-empty" class="empty-state">
+              No data captured yet. Adjust Ambient Light and toggle the light ON or OFF.
+            </div>
+
+            <table id="data-table" class="data-table hidden">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Ambient Light (input)</th>
+                  <th>Light State (output)</th>
+                </tr>
+              </thead>
+              <tbody id="data-tbody"></tbody>
+            </table>
+          </div>
+        </details>
+
+        <details class="panel collapsible">
+          <summary class="panel-header">
+            <h2 id="boundary-panel-title">Program</h2>
+            <span class="chevron" aria-hidden="true"></span>
+          </summary>
+
+          <div class="collapsible-body">
+            <div id="programmer-controls" class="mode-controls">
+              <div class="slider-group threshold-slider-group">
+                <div class="label-row">
+                  <label for="threshold-slider">Manual Threshold (θ)</label>
+                  <span id="threshold-value" class="mono">40%</span>
+                </div>
+                <input
+                  id="threshold-slider"
+                  type="range"
+                  min="0"
+                  max="100"
+                  value="40"
+                  step="1"
+                />
+                <div class="scale-labels">
+                  <span>0%</span>
+                  <span>100%</span>
+                </div>
+              </div>
+              <div class="actions">
+                <button id="direction-toggle-btn" type="button">
+                  Rule: ON when Ambient Light &lt; θ
+                </button>
+                <button id="programmer-reset-btn" type="button" class="ghost-btn">
+                  Reset
+                </button>
+              </div>
+            </div>
+
+            <div id="ml-controls" class="actions hidden">
+              <button id="learn-btn" type="button" class="primary-btn">
+                Learn Decision Boundary
+              </button>
+              <button id="reset-btn" type="button" class="ghost-btn">
+                Reset
+              </button>
+            </div>
+
+            <div class="chart-wrap">
+              <svg id="boundary-chart" viewBox="0 0 600 130" role="img" aria-label="1D decision boundary"></svg>
+            </div>
+
+            <div id="model-status" class="status-line">
+              Toggle the light to capture training examples.
+            </div>
+          </div>
+        </details>
+
+        <details id="programmer-code-panel" class="panel collapsible">
+          <summary class="panel-header">
+            <h2>Hardcoded Rule</h2>
+            <div class="summary-meta">
+              <span id="code-threshold-meta" class="mono muted">θ = 40%</span>
+              <span class="chevron" aria-hidden="true"></span>
+            </div>
+          </summary>
+
+          <div class="collapsible-body">
+            <pre class="code-block mono"><code id="rule-code"></code></pre>
+          </div>
+        </details>
+      </div>
+
+      <section class="panel lamp-panel">
+        <div class="slider-group">
+          <div class="label-row">
+            <label for="ambient-slider">Ambient Light (Sun Light)</label>
+            <span id="ambient-value" class="mono">50%</span>
+          </div>
+          <input
+            id="ambient-slider"
+            type="range"
+            min="0"
+            max="100"
+            value="50"
+            step="1"
+          />
+          <div class="scale-labels">
+            <span>0% (Pitch Dark)</span>
+            <span>100% (Bright Sun)</span>
+          </div>
+        </div>
+
+        <div id="light-indicator" class="light-indicator" aria-label="3D lamp and sunlight simulation"></div>
+
+        <div class="light-actions">
+          <button
+            id="toggle-light-btn"
+            type="button"
+            role="switch"
+            aria-checked="false"
+            class="switch-btn"
+          >
+            <span class="switch-label">Light</span>
+            <span class="switch-track" aria-hidden="true">
+              <span class="switch-thumb"></span>
+            </span>
+            <span id="light-state-text" class="switch-state mono">OFF</span>
+          </button>
+          <span class="hint">Drag scene to orbit</span>
+        </div>
+
+        <div id="prediction-bar" class="prediction-bar hidden">
+          <div class="prediction-readout">
+            <span><span id="pred-label">Rule Output</span> at <strong id="pred-x" class="mono">50%</strong>:</span>
+            <span id="pred-badge" class="badge">OFF</span>
+          </div>
+          <button id="smart-lamp-btn" type="button" class="smart-btn">
+            Smart Lamp: OFF
+          </button>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
